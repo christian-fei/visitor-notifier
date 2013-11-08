@@ -131,4 +131,4 @@ function stayAliveMotherfucker(){
 	logger.log('sending keepalive');
 	tcpsocket.write( 'keepavlive' );
 }
-setInterval(stayAliveMotherfucker,1000);
+setInterval(stayAliveMotherfucker,5000);
