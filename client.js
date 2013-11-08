@@ -122,13 +122,21 @@ tcpsocket.on('data',function(data){
 */
 tcpsocket.on('error',function(err){
 	logger.log('something weird happened\n'+err);
+	/*
+		CONNECT AGAIN?
+	*/
+	logger.log('CONNECTING AGAIN');
+	tcpsocket.connect(tcpport,bounceServer,function(){
+		logger.log('client connected to ' + bounceServer + ':' + tcpport + ' \t @' + (new Date()).toUTCString());
+	});
 });
+
 /*
 	TESTTESTTESTTEST
 	to keep the connection alive
 */
 function stayAliveMotherfucker(){
-	logger.log('sending keepalive');
-	tcpsocket.write( 'keepavlive' );
+	tcpsocket.write( 'keepalive' );
+	logger.log('keepalive ' + (new Date()).toUTCString());
 }
-setInterval(stayAliveMotherfucker,5000);
+setInterval(stayAliveMotherfucker,10000);

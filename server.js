@@ -116,7 +116,7 @@ var tcpserver = net.createServer(function(c) {
 		The clients send some data (the secret), if it's equivalent to the one passed to the server accept the connection, else fuck off.
 	*/
 	c.on('data', function(data) {
-		if(data.toString() === 'keepavlive'){
+		if(data.toString() === 'keepalive'){
 			logger.log('keepalive ' + (new Date()).toUTCString());
 			return;
 		}else{
@@ -141,5 +141,6 @@ var tcpserver = net.createServer(function(c) {
 tcpserver.listen(tcpport, function() {
 	logger.log('STARTED TCP SERVER @'+tcpport+'\t' + (new Date()).toUTCString());
 });
+
 //this is one man show
 tcpserver.maxConnections = 1;

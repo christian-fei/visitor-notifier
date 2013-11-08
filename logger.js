@@ -9,21 +9,27 @@ function setup(){
 	var options = arguments[0] ? arguments[0] : {};
 	logFile = options.logFile ? options.logFile : logFile;
 	toConsole = options.toConsole ? options.toConsole : toConsole;
+	checkFile(logFile);
 	if(options.clear)
 		clear();
 }
-function log(text){
+function log(l){
 	var options = arguments[1] ? arguments[1] : {};
 
-	var tmpToConsole = options.toConsole ? options.toConsole : false;
+	var tmpToConsole = options.toConsole ? options.toConsole : toConsole;
 
 	var tmpLogfile = options.logFile ? options.logFile : logFile;
 
-	fs.appendFile(tmpLogfile, text.toString() + '\n', function (err) {
+	checkFile(logFile);
+
+	/*pretty print that shit*/
+	l = l instanceof Object ? JSON.stringify(l) : l;
+
+	fs.appendFile(tmpLogfile, l.toString() + '\n', function (err) {
 		if (err) throw err;
 	});
-	if(tmpToConsole || toConsole)
-		console.log(text.toString());
+	if(tmpToConsole)
+		console.log(l.toString());
 }
 function checkFile(file){
 	fs.exists(file,function(exists){
