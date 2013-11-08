@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "crypto": "0.0.3",
+    "johnny-five" : "0.7.x"
+  }
+}
