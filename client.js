@@ -107,9 +107,10 @@ tcpsocket.write( crypto.createHash('md5').update(secret).digest("hex") );
 	TESTTESTTESTTEST
 	to keep the connection alive
 */
-setInterval(function(){
+function stayAliveMotherfucker(){
 	tcpsocket.write( 'keepavlive' );
-},10000);
+}
+setInterval(stayAliveMotherfucker,1000);
 
 
 /*
