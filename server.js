@@ -116,9 +116,9 @@ var tcpserver = net.createServer(function(c) {
 		The clients send some data (the secret), if it's equivalent to the one passed to the server accept the connection, else fuck off.
 	*/
 	c.on('data', function(data) {
-		console.log( data.toString() );
+		logger.log( data.toString() );
 		if(data.toString() === 'keepavlive'){
-			console.log('keepavlive ' + (new Date()).toUTCString());
+			logger.log('keepavlive ' + (new Date()).toUTCString());
 			return;
 		}else{
 			logger.log('CLIENT WANTS TO CONNECT WITH :\t' + data.toString() + '\t' + (new Date()).toUTCString());

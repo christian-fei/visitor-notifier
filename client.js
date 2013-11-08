@@ -103,14 +103,6 @@ tcpsocket.connect(tcpport,bounceServer,function(){
 	send the secret to the server
 */
 tcpsocket.write( crypto.createHash('md5').update(secret).digest("hex") );
-/*
-	TESTTESTTESTTEST
-	to keep the connection alive
-*/
-function stayAliveMotherfucker(){
-	tcpsocket.write( 'keepavlive' );
-}
-setInterval(stayAliveMotherfucker,1000);
 
 
 /*
@@ -131,3 +123,12 @@ tcpsocket.on('data',function(data){
 tcpsocket.on('error',function(err){
 	logger.log('something weird happened\n'+err);
 });
+/*
+	TESTTESTTESTTEST
+	to keep the connection alive
+*/
+function stayAliveMotherfucker(){
+	logger.log('sending keepalive');
+	tcpsocket.write( 'keepavlive' );
+}
+setInterval(stayAliveMotherfucker,1000);
