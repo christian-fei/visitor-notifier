@@ -7,6 +7,8 @@ var net = require('net'),
 	bounceServer = 'localhost',
 	secret = '';
 
+var anim =rotateLeds;
+
 logger.setup({logFile:'client.txt',toConsole:true});
 
 if(process.env.LOGFILE)
@@ -20,58 +22,69 @@ logger.log('====================');
 logger.log('++++++++++++++++++++');
 logger.log('\n');
 logger.log('START :\t' + (new Date()).toUTCString());
+
 /*
 	HARDWARE PART
 */
 var five = require("johnny-five"),
 	board = new five.Board(),
 	active=false;
-	leds=null;
+	leds=null,
+	aliveLed=null,
+	ledsArray = ['red','yellow1','green','yellow2'];
 
 board.on("ready", function() {
 	logger.log('board is ready ' + (new Date()).toUTCString());
 	leds = {};
 	leds.red = new five.Led(11);
-	leds.yellow = new five.Led(10);
+	leds.yellow1 = new five.Led(10);
 	leds.green = new five.Led(9);
+	leds.yellow2 = new five.Led(6);
+	aliveLed = new five.Led(5);
 });
-function rotateLeds(){
-	var blinkdur = 80,
-		max = 15;
-	/*the multiplication between blinkdur and max results in the total duration of the animation*/
 
-	for(var i=0;i<max;i++){
-		for(led in leds){
-			(function(j,l){
-				var delay = l === 'red' ? blinkdur/3 : l === 'yellow' ? blinkdur/3*2 : blinkdur/3*3;
-				setTimeout(function(){
-					if(j % 2 === max % 2)
-						leds[l].on();
-					else
-						leds[l].off();
-					if( j === max -1)
-						active=false;
-					//logger.log(l + ' ' + ( j % 2 === max % 2 ? 'on' : 'off' ) + ' after ' + j * blinkdur);
-				},blinkdur * j + delay);
-			})(i,led);
-		}
+
+function ledMadness(duration){
+	var pulse = 30;
+	for(var i=0;i<duration;i+=pulse){
+		(function(j){
+			setTimeout(function(){
+				var on = Math.floor(Math.random()*1.9) === 0 ? true : false;
+				var l = ledsArray[Math.floor(Math.random()*ledsArray.length) ];
+				if(on)
+					leds[l].pulse(pulse);
+				else
+					leds[l].stop().off();
+				/*turn the leds off*/
+				if(j>=duration-pulse){
+					var k=0;
+					while(ll=ledsArray[k++])
+						leds[ll].stop().off();
+				}
+			},j);
+		})(i);
 	}
-	/*
-	for(led in leds){
-		for(var i=0;i<max;i++){
-			(function(j,l){
-				setTimeout(function(){
-					if(j % 2 === max % 2)
-						leds[l].on();
-					else
-						leds[l].off();
-					if( j === max -1)
-						active=false;
-					//console.log(l + ' after ' + j * blinkdur);
-				},blinkdur * i);
-			})(i,led);
-		}
-	}*/
+}
+
+function rotateLeds(duration){
+	var lastStateLed = [true,true,true,true],
+		dur = 80;
+	for(var i=j=0;i<duration;i+=dur,j++){
+		lastStateLed[j%lastStateLed.length] = !lastStateLed[j%lastStateLed.length];
+		(function(time,ledid,lsl){
+			setTimeout(function(){
+				var l = ledsArray[ledid % ledsArray.length];
+				//console.log(l + ' ' + lsl + ' after ' + time);
+				if(lsl)
+					leds[l].on();
+				else
+					leds[l].off();
+				if(time >= duration - dur)
+					for(var k=0;k<ledsArray.length;k++)
+						leds[ledsArray[k]].off();
+			},time);
+		})(i,j,lastStateLed[j%lastStateLed.length]);
+	}
 }
 /*
 	ENV
@@ -110,10 +123,8 @@ tcpsocket.write( crypto.createHash('md5').update(secret).digest("hex") );
 */
 tcpsocket.on('data',function(data){
 	logger.log('got data from server ' + (new Date()).toUTCString() + ' \n'+data.toString());
-	if(leds && !active){
-		//ALWAYS ACTIVE
-		//active=true;
-		rotateLeds();
+	if(leds){
+		anim(2000);
 	}
 });
 /*
@@ -137,6 +148,15 @@ tcpsocket.on('error',function(err){
 */
 function stayAliveMotherfucker(){
 	tcpsocket.write( 'keepalive' );
+	areYouAliveMotherfucker();
 	logger.log('keepalive ' + (new Date()).toUTCString());
+}
+function areYouAliveMotherfucker(){
+	if(aliveLed){
+		aliveLed.on();
+		setTimeout(function(){
+			aliveLed.off();
+		},1000);
+	}
 }
 setInterval(stayAliveMotherfucker,10000);

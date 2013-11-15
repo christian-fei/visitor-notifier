@@ -48,7 +48,7 @@ if(process.env.HTTP_PORT)
 /*
 set up which hosts can perform connection to this server, and trigger something on the other end (my PC)
 */
-var allowedSites = {'christian-fei.com':1,'opentalk.me':1};
+var allowedSites = {'christian-fei.com':1,'opentalk.me':1,'soundvot.es':1};
 if(process.env.LOCAL){
 	allowedSites['localhost:'+httpport] = 1;
 	allowedSites['37.139.20.20:'+httpport] = 1;
@@ -59,8 +59,7 @@ logger.log('\t' + JSON.stringify(allowedSites));
 
 
 var httpserver = http.createServer(function(req,res){
-	var who = req.headers.origin ? req.headers.origin : req.headers.host;
-	who = who.replace(/^http:\/\//,'');
+	var who = (req.headers.origin ? req.headers.origin : req.headers.host).replace(/^http:\/\//,'');
 
 	logger.log('REQUEST :\t' + who + '\t' + (new Date()).toUTCString());
 	/*
